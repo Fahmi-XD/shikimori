@@ -1,0 +1,22 @@
+{
+  "Downloader": [
+    {
+      "cmd": "TikTok",
+      "desc": "Download video TikTok Tanpa Watermak"
+    },
+    {
+      "cmd": "YouTube",
+      "desc": "Download Video/Audio YouTube dengan instant."
+    }
+  ],
+  "AI": [
+    {
+      "cmd": "AI",
+      "desc": "Berbicara dengan AI, Tanya apapun yang kamu suka!"
+    },
+    {
+      "cmd": "Claude",
+      "desc": "Tanya apa saja dengan AI dari Anthropic!"
+    }
+  ]
+}
