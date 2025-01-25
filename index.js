@@ -643,9 +643,9 @@ async function connectToWhatsApp() {
       }
     } else if (connection === "open") {
       console.log(`[ ${chalk.green("System")} ] Koneksi Terhubung!`);
-      // ditz.sendMessage(owner[1] + "@s.whatsapp.net", {
-      //   text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
-      // });
+      ditz.sendMessage(owner[0] + "@s.whatsapp.net", {
+        text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
+      });
     }
   });
   return ditz
