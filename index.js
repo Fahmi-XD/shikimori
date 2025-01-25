@@ -36,7 +36,7 @@ const {
   videoToWebp,
   writeExifImg,
   writeExifVid
-} = require('./lib/exif')
+} = require('./src/lib/exif')
 const {
   smsg,
   isUrl,
@@ -46,7 +46,10 @@ const {
   fetchJson,
   await,
   sleep
-} = require('./lib/myfunc')
+} = require('./src/lib/myfunc')
+const loadPlugins = require("./src/lib/plugins");
+const handlePlugins = require("./src/lib/pClient");
+
 const question = (text) => {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -57,18 +60,21 @@ const question = (text) => {
   })
 };
 
+global.plugins = [];
+global.actPlugins = {};
+
 var low
 try {
   low = require('lowdb')
 } catch (e) {
-  low = require('./lib/lowdb')
+  low = require('./src/lib/lowdb')
 }
 
 const {
   Low,
   JSONFile
 } = low
-const mongoDB = require('./lib/mongoDB')
+const mongoDB = require('./src/lib/mongoDB')
 
 const store = makeInMemoryStore({
   logger: pino().child({
@@ -85,8 +91,9 @@ global.db = new Low(
   /https?:\/\//.test(opts['db'] || '') ?
     new cloudDBAdapter(opts['db']) : /mongodb/.test(opts['db']) ?
       new mongoDB(opts['db']) :
-      new JSONFile(`database/database.json`)
+      new JSONFile(`src/database/database.json`)
 )
+
 global.DATABASE = global.db
 global.loadDatabase = async function loadDatabase() {
   if (global.db.READ) return new Promise((resolve) => setInterval(function () {
@@ -109,13 +116,13 @@ global.loadDatabase = async function loadDatabase() {
   }
   global.db.chain = _.chain(global.db.data)
 }
-loadDatabase()
 
 if (global.db) setInterval(async () => {
   if (global.db.data) await global.db.write()
 }, 30 * 1000)
 
 console.clear();
+
 cfont.say('SHIKIMORI', {
   font: 'tiny',
   align: 'center',
@@ -128,13 +135,33 @@ cfont.say('GitHub: DitzDev/shikimori', {
   colors: ['system']
 });
 
+const cached = [
+  path.join(process.cwd(), "src", "lib", "plugins.js"),
+  "readline",
+  "awesome-phonenumber"
+]
+
 
 async function connectToWhatsApp() {
+  await loadPlugins();
+  for (const ss of cached) {
+    await delete require.cache[require.resolve(ss)]
+  }
+  await loadDatabase();
+
   const {
     state,
     saveCreds
-  } = await useMultiFileAuthState(global.sessionName)
+  } = await useMultiFileAuthState(path.join("src", global.sessionName))
+  const { version, isLatest } = await fetchLatestBaileysVersion();
+  console.log(
+    `[ ${chalk.green("System")} ] Menggunakan WA v${version.join(
+      "."
+    )}, versi terbaru: ${isLatest ? "Ya" : "Tidak"}`
+  );
   const ditz = makeWASocket({
+    version,
+    generateHighQualityLinkPreview: true,
     logger: pino({
       level: "silent"
     }),
@@ -142,17 +169,20 @@ async function connectToWhatsApp() {
       printQRInTerminal: true
     }),
     ...(usePairingCode && {
-      printQRInTerminal: !usePairingCode
+      printQRInTerminal: !usePairingCode,
     }),
     auth: state,
-    version: [2, 3000, 1017531287],
-    browser: Browsers.macOS('Safari')
+    // version: [2, 3000, 1017531287],
+    browser: Browsers.ubuntu('Chrome'),
+    defaultQueryTimeoutMs: undefined,
   })
+
   if (usePairingCode && !ditz.authState.creds.registered) {
     const phoneNumber = await question('Masukan Nomer Yang Aktif Awali Dengan 62 Recode :\n');
+    global.db.data.botNumber = phoneNumber;
+    global.db.write();
     const code = await ditz.requestPairingCode(phoneNumber.trim())
     console.log(`Pairing code: ${code}`)
-
   }
 
   ditz.decodeJid = (jid) => {
@@ -165,14 +195,37 @@ async function connectToWhatsApp() {
 
   ditz.ev.on('messages.upsert', async chatUpdate => {
     try {
-      mek = chatUpdate.messages[0]
-      if (!mek.message) return
-      mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
-      if (mek.key && mek.key.remoteJid === 'status@broadcast') return
-      if (!ditz.public && !mek.key.fromMe && chatUpdate.type === 'notify') return
-      if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return
-      m = smsg(ditz, mek, store),
-        require("./case")(ditz, m, chatUpdate, store)
+      // mek = chatUpdate.messages[0]
+      for (const mek of chatUpdate.messages) {
+        if (!mek.message) return
+        mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
+        if (mek.key && mek.key.remoteJid === 'status@broadcast') return
+        if (!ditz.public && !mek.key.fromMe && chatUpdate.type === 'notify') return;
+        if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return;
+        m = smsg(ditz, mek, store);
+        if (!m.body) return;
+
+        await handlePlugins(ditz, m, chatUpdate, store);
+        await require(path.join(process.cwd(), "case", "case.js"))(ditz, m, chatUpdate, store);
+        const exc = async (folder) => {
+          const f = await fs.readdirSync(folder).filter(v => !v.startsWith("__") && v != "case.js");
+          
+          for (const v of f) {
+            if (await fs.statSync(path.join(folder, v)).isDirectory()) {
+              await exc(path.join(folder, v))
+            } else {
+              try {
+                await require(path.join(process.cwd(), folder, v))(ditz, m, chatUpdate, store);
+              } catch (error) {
+                console.log(`[ ${chalk.red("Error")} ] Periksa kembali kode case anda.`)
+                console.log(error)
+              }
+            }
+          }
+        }
+        
+        await exc("./case")
+      }
     } catch (err) {
       console.log(err)
     }
@@ -468,7 +521,7 @@ async function connectToWhatsApp() {
     if (options.asSticker || /webp/.test(mime)) {
       let {
         writeExif
-      } = require('./lib/sticker.js')
+      } = require('./src/lib/sticker.js')
       let media = {
         mimetype: mime,
         data
@@ -589,9 +642,10 @@ async function connectToWhatsApp() {
         connectToWhatsApp();
       }
     } else if (connection === "open") {
-      ditz.sendMessage(owner + "@s.whatsapp.net", {
-        text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
-      });
+      console.log(`[ ${chalk.green("System")} ] Koneksi Terhubung!`);
+      // ditz.sendMessage(owner[1] + "@s.whatsapp.net", {
+      //   text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
+      // });
     }
   });
   return ditz

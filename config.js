@@ -3,11 +3,11 @@ const moment = require("moment-timezone");
 const chalk = require("chalk");
 
 global.ownername = "DitzDev"; // Nama owner?
-global.owner = ['6285717062467'] // Bisa tambahin lagi, Contoh ['628xx', '62867xx']
+global.owner = ['6285717062467', '6285797442902'] // Bisa tambahin lagi, Contoh ['628xx', '62867xx']
 global.nomorown = '6285717062467' // Owner utama
-global.prem = ['6285717062467'] 
+global.prem = ['6285717062467', '6285797442902'] 
 global.botname = 'ShikimoriBotz'
-global.botversi = '1.0.0-case'
+global.botversi = '1.0.0-case-plugin'
 global.packname = 'ShikimoriBotz - DitzDev'
 // prefix?
 global.prefa = ['!','.',',','🐤','🗿']

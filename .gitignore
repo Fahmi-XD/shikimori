@@ -1,3 +1,4 @@
-/Shikimori/
+/src/Shikimori/
 /node_modules/
 package-lock.json
+yarn.lock
