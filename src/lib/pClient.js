@@ -1,6 +1,8 @@
 module.exports = async function (ditz, m, chatUpdate, store) {
   const { body } = m;
   const command = body.slice(1).trim().split(/ +/).shift().toLowerCase();
+  const args = body.trim().split(/ +/).slice(1)
+  const text = q = args.join(" ")
 
   if (global.plugins.flat().includes(command)) {
     const handle = () => {
@@ -22,7 +24,7 @@ module.exports = async function (ditz, m, chatUpdate, store) {
     }
 
     if (!global.actPlugins[command]) {
-      if (global.plugins.filter(v => v[1] == command)[0][0].endsWith(".mjs")) {
+      if (global.plugins.filter(v => v[1] == command)[0][0].endsWith(".js")) {
         (await import("file://" + global.plugins.filter(v => v[1] == command)[0][0])).default(handle());
       } else {
         await require(global.plugins.filter(v => v[1] == command)[0][0])(handle());
@@ -31,7 +33,7 @@ module.exports = async function (ditz, m, chatUpdate, store) {
 
     const rdata = global.actPlugins[command];
     if (rdata) {
-      rdata.run.call(this, { m, ditz })
+      rdata.run.call(this, { m, ditz, text, args })
     }
   }
 }
