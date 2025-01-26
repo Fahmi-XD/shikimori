@@ -1,6 +1,7 @@
 const fs = require("node:fs")
 const path = require("node:path")
 const chalk = require("chalk");
+const readline = require("node:readline");
 
 const pathMenu = './src/database/menuData.json';
 
@@ -78,13 +79,18 @@ plugin: ${JSON.stringify({
       if (await fs.statSync(path.join(folder, v)).isDirectory()) {
         await sumCase(path.join(folder, v))
       } else {
-        const ffl = await fs.readFileSync(path.join(process.cwd(), folder, v), "utf-8");
-        const cs = ffl.match(/case\s["']\w+["']\s?\:/g);
-        const categories = ffl.matchAll(/\s?@Category\s?\("(\w+)"\s?,\s?"([\w\s-]+)"\s?,\s?"(\w+)"\s?,\s?"(.+)"\)\s?/gi)
-        for (let [, cats, alias, cmd, desc] of categories) {
-          exports.addCommandToCategory(cats, cmd, desc, alias)
+        const readStream = await readline.createInterface({
+          input: fs.createReadStream(path.join(process.cwd(), folder, v)),
+          crlfDelay: Infinity
+        })
+        for await (const ffl of readStream) {
+          const cs = ffl.match(/case\s["']\w+["']\s?\:/g);
+          const categories = ffl.matchAll(/\s?@Category\s?\("(\w+)"\s?,\s?"([\w\s-]+)"\s?,\s?"(\w+)"\s?,\s?"(.+)"\)\s?/gi);
+          if (categories) for (let [, cats, alias, cmd, desc] of categories) {
+            exports.addCommandToCategory(cats, cmd, desc, alias)
+          }
+          ct += cs ? cs.length : 0;
         }
-        ct += cs ? cs.length : 0;
       }
     }
   }

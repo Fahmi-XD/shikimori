@@ -132,6 +132,15 @@
       "autolevelup": true,
       "banned": false,
       "prem": false
+    },
+    "120363280576631666@newsletter": {
+      "afkTime": -1,
+      "afkReason": "",
+      "limit": 50,
+      "level": 0,
+      "autolevelup": true,
+      "banned": false,
+      "prem": false
     }
   },
   "chats": {
@@ -334,6 +343,26 @@
         "text_left": "",
         "text_welcome": ""
       }
+    },
+    "120363280576631666@newsletter": {
+      "cai": false,
+      "selfgc": false,
+      "mute": false,
+      "wlcm": true,
+      "nsfw": false,
+      "antitoxic": false,
+      "antilink": false,
+      "antilinkyt": false,
+      "antilinktt": false,
+      "antivirtex": true,
+      "antipanel": false,
+      "antilinkv2": false,
+      "autodown": false,
+      "notification": {
+        "status": false,
+        "text_left": "",
+        "text_welcome": ""
+      }
     }
   },
   "game": {},
@@ -350,6 +379,11 @@
       "autoread": false
     },
     "6285220188676": {
+      "status": 0,
+      "autobio": false,
+      "autoread": false
+    },
+    "6287727682210": {
       "status": 0,
       "autobio": false,
       "autoread": false

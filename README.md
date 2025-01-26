@@ -20,16 +20,10 @@
 - [x] Support CommonJS
 - [x] Support Plugin
 - [x] Support ESM ( Plugin )
-- [ ] Support ESM ( Case )
-- [ ] Plugin premium user
-- [ ] Plugin owner user
-- [ ] Plugin limit user
+- [x] Support ESM ( Case )
 
  ## Dokumentasi
  Semua perintah bot ada pada file [case.js](case.js), Dan juga untuk menu, Disini saya membuat agar lebih praktis dan tidak perlu lagi menambahkan menu secara manual, Disini ada yang namanya dekorasi `@Category`, dekorasi ini bisa memasukan setiap perintah ke dalam kategori menu.
- 
-> [!WARNING]
-> `@Category` hanya bisa berkerja ketika suatu perintah di jalankan untuk pertama kalinya, ini hanya berlaku untuk perintah case
 
 </br>
 </br>

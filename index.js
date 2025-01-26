@@ -61,7 +61,7 @@ const question = (text) => {
 };
 
 global.plugins = [];
-global.actPlugins = {};
+global.actPlugins = new Map();
 
 var low
 try {
@@ -137,9 +137,19 @@ cfont.say('GitHub: DitzDev/shikimori', {
 
 const cached = [
   path.join(process.cwd(), "src", "lib", "plugins.js"),
-  "readline",
   "awesome-phonenumber"
 ]
+
+function systemCache() {
+  let cout = 0;
+  if (global.actPlugins.size) [...global.actPlugins.keys()].forEach(v => {
+    if ((Date.now() - global.actPlugins.get(v).lastUsed) > 300_000) { // (3600000 - 1 jam) // (300000 - 5 menit)
+      global.actPlugins.delete(v)
+      cout++;
+    }
+  })
+  if (cout) console.log(`[ ${chalk.cyan("Info")} ] Remove unused plugin : ${cout}`);
+}
 
 
 async function connectToWhatsApp() {
@@ -147,6 +157,7 @@ async function connectToWhatsApp() {
   for (const ss of cached) {
     await delete require.cache[require.resolve(ss)]
   }
+  setInterval(systemCache, 300_000) // 5 menit\
   await loadDatabase();
 
   const {
@@ -642,10 +653,10 @@ async function connectToWhatsApp() {
         connectToWhatsApp();
       }
     } else if (connection === "open") {
-      console.log(`[ ${chalk.green("System")} ] Koneksi Terhubung!`);
-      ditz.sendMessage(owner[0] + "@s.whatsapp.net", {
-        text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
-      });
+      console.log(`[ ${chalk.green("System")} ] Koneksi Terhubung!\n\n`);
+      // ditz.sendMessage(owner[0] + "@s.whatsapp.net", {
+      //   text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
+      // });
     }
   });
   return ditz

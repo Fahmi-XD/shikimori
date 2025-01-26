@@ -71,7 +71,6 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
     if (!ditz.public) {
       if (!m.key.fromMe && isOwner) return;
     }
-    ditz.readMessages([m.key]);
 
     function replyBanned() {
       ditz.sendMessage(m.chat, {
