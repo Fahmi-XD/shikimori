@@ -353,7 +353,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
         reply("Sebentar yah ^_^");
 
         const rows = global.menuData[category].map(item => ({
-          title: `${item.cmd}`,
+          title: `${item.alias}`,
           description: item.desc,
           id: `.${item.cmd}`
         }));
@@ -405,7 +405,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
         break;
       }
 
-      /** @Category ("AI", "AI", "Berbicara dengan AI, Tanya apapun yang kamu suka!") */
+      /** @Category ("AI", "Shikimori AI", "ai", "Berbicara dengan AI, Tanya apapun yang kamu suka!") */
       case 'ai': case 'shikimori': {
         if (isBan) return replyBanned();
         if (!text) return reply("Aku Shikimori AI, Apa yang kamu ingin tanyakan? ^_°");
@@ -421,7 +421,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
       }
         break;
       
-      /** @Category ("AI", "Claude", "Tanya apa saja dengan AI dari Anthropic!") */
+      /** @Category ("AI", "Claude AI", "claude", "Tanya apa saja dengan AI dari Anthropic!") */
       case 'claude': {
         if (isBan) return replyBanned();
         if (!text) return reply("Hi! I'm Claude, How can i Assist you today?");
@@ -438,7 +438,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
         break
       //////// DOWNLOADER HERE /////////////////////
 
-      /** @Category ("Downloader", "TikTok", "Download video TikTok Tanpa Watermark") */
+      /** @Category ("Downloader", "TikTok Downloader", "tiktok", "Download video TikTok Tanpa Watermark") */
       case 'tiktok': case 'tt': {
         if (isBan) return replyBanned();
 
@@ -512,9 +512,18 @@ ${data.title}
       }
         break;
 
-      /** @Category ("Downloader", "YouTube", "Download Video/Audio YouTube dengan instant.") */
-      case "youtube": case "ytdl": {
-        reply("Worek");
+      /** @Category ("Downloader", "YouTube Downloader Audio", "ytmp3", "Download Video/Audio YouTube dengan instant.") */
+      case "youtube-mp3": case "ytmp3": {
+        if (!text) return reply("Mana link YouTube nya?");
+        reply("Tunggu sebentar...");
+        try {
+           let url = `https://ytdl.axeel.my.id/api/download/audio?url=${encodeURIComponent(text)}`;
+           let response = await fetch(url);
+           let data = response.data;
+           reply(data);
+        } catch (e) {
+           reply(e);
+        }
       }
         break;
         

@@ -16,13 +16,13 @@ function saveMenuData(data) {
   fs.writeFileSync(pathMenu, JSON.stringify(data, null, 2), 'utf8');
 }
 
-exports.addCommandToCategory = function addCommandToCategory(category, cmd, desc) {
+exports.addCommandToCategory = function addCommandToCategory(category, cmd, desc, alias = null) {
   if (!global.menuData[category]) {
     global.menuData[category] = [];
   }
   const isExist = global.menuData[category].some(item => item.cmd === cmd);
   if (!isExist) {
-    global.menuData[category].push({ cmd, desc });
+    global.menuData[category].push({ cmd, desc, alias: alias || cmd });
     saveMenuData(global.menuData);
   }
 }
@@ -40,7 +40,7 @@ module.exports = async function loadPlugins() {
       add: (override) => {
         if (override["cmd"] && override["desc"]) {
           global.plugins.push([c, ...override["cmd"].flat()])
-          exports.addCommandToCategory(override["cats"], override["cmd"].flat()[0], override["desc"]);
+          exports.addCommandToCategory(override["cats"], override["cmd"].flat()[0], override["desc"], override["alias"]);
         } else {
           console.log(`[ ${chalk.red("Error")} ] Cmd atau Deskripsi tidak disetel: file ${c}
 
@@ -80,9 +80,9 @@ plugin: ${JSON.stringify({
       } else {
         const ffl = await fs.readFileSync(path.join(process.cwd(), folder, v), "utf-8");
         const cs = ffl.match(/case\s["']\w+["']\s?\:/g);
-        const categories = ffl.matchAll(/\s?@Category\s?\("(\w+)"\s?,\s?"(\w+)"\s?,\s?"(.+)"\)\s?/gi)
-        for (let [, cats, cmd, desc] of categories) {
-          exports.addCommandToCategory(cats, cmd, desc)
+        const categories = ffl.matchAll(/\s?@Category\s?\("(\w+)"\s?,\s?"([\w\s-]+)"\s?,\s?"(\w+)"\s?,\s?"(.+)"\)\s?/gi)
+        for (let [, cats, alias, cmd, desc] of categories) {
+          exports.addCommandToCategory(cats, cmd, desc, alias)
         }
         ct += cs ? cs.length : 0;
       }

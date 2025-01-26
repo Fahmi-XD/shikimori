@@ -15,6 +15,7 @@ const pengguna = JSON.parse(fs.readFileSync('./src/database/user.json'))
 const owner = JSON.parse(fs.readFileSync('./owner.json'))
 const prem = JSON.parse(fs.readFileSync('./premium.json'))
 const banned = JSON.parse(fs.readFileSync('./src/database/banned.json'));
+const { smsg, tanggal, getTime, formatp, isUrl, sleep, clockString, runtime, fetchJson, getBuffer, jsonformat, format, parseMention, getRandom, getGroupAdmins } = require('../src/lib/myfunc')
 
 module.exports = async (ditz, m, chatUpdate, store) => {
   const { type, quotedMsg, mentioned, now, fromMe, getQuotedObj } = m

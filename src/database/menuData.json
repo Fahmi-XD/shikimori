@@ -2,37 +2,32 @@
   "Testing": [
     {
       "cmd": "ping",
-      "desc": "Hanya untuk percobaan ping"
-    },
-    {
-      "cmd": "dev",
-      "desc": "Hanya untuk percobaan dev"
-    }
-  ],
-  "AI": [
-    {
-      "cmd": "AI",
-      "desc": "Berbicara dengan AI, Tanya apapun yang kamu suka!"
-    },
-    {
-      "cmd": "Claude",
-      "desc": "Tanya apa saja dengan AI dari Anthropic!"
+      "desc": "Hanya untuk percobaan ping",
+      "alias": "Ping for Testing"
     }
   ],
   "Downloader": [
     {
-      "cmd": "TikTok",
-      "desc": "Download video TikTok Tanpa Watermark"
+      "cmd": "ytmp3",
+      "desc": "Download Video/Audio YouTube dengan instant.",
+      "alias": "YouTube Downloader Audio"
     },
     {
-      "cmd": "YouTube",
-      "desc": "Download Video/Audio YouTube dengan instant."
+      "cmd": "tiktok",
+      "desc": "Download video TikTok Tanpa Watermark",
+      "alias": "TikTok Downloader"
     }
   ],
-  "Tools": [
+  "AI": [
     {
-      "cmd": "rss",
-      "desc": "Melihat penggunaan memory"
+      "cmd": "ai",
+      "desc": "Berbicara dengan AI, Tanya apapun yang kamu suka!",
+      "alias": "Shikimori AI"
+    },
+    {
+      "cmd": "claude",
+      "desc": "Tanya apa saja dengan AI dari Anthropic!",
+      "alias": "Claude AI"
     }
   ]
 }
