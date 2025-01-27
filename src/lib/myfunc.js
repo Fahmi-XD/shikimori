@@ -1,4 +1,4 @@
-const { proto, delay, getContentType, areJidsSameUser, generateWAMessage, generateWAMessageFromContent } = require("@whiskeysockets/baileys")
+const { proto, prepareWAMessageMedia, delay, getContentType, areJidsSameUser, generateWAMessage, generateWAMessageFromContent } = require("@whiskeysockets/baileys")
 const chalk = require('chalk')
 const fs = require('fs')
 const Crypto = require('crypto')
@@ -402,7 +402,339 @@ exports.smsg = async (conn, m, store) => {
         }
         conn.ev.emit('messages.upsert', msg)
     }
+    conn.sendButton = async (jid, text = "", footer = "", buttons = [], quoted = null) => {
+		try {
+			let interactiveButtons = buttons.map(button => {
+				if (button.type === 'url') {
+					return {
+						name: "cta_url",
+						buttonParamsJson: JSON.stringify({
+							display_text: button.text,
+							url: button.url,
+							merchant_url: button.url
+						})
+					};
+				} else if (button.type === 'copy') {
+					return {
+						name: "cta_copy",
+						buttonParamsJson: JSON.stringify({
+							display_text: button.text,
+							id: button.id,
+							copy_code: button.copy_code
+						})
+					};
+				} else if (button.type === 'buttons') {
+					return {
+						name: "quick_reply",
+						buttonParamsJson: JSON.stringify({
+							display_text: button.text,
+							id: button.id
+						})
+					};
+				}
+			});
+			let msg = generateWAMessageFromContent(jid, {
+				viewOnceMessage: {
+					message: {
+						messageContextInfo: {
+							deviceListMetadata: {},
+							deviceListMetadataVersion: 2
+						},
+						interactiveMessage: proto.Message.InteractiveMessage.create({
+							body: proto.Message.InteractiveMessage.Body.create({
+								text
+							}),
+							footer: proto.Message.InteractiveMessage.Footer.create({
+								text: footer
+							}),
+							header: proto.Message.InteractiveMessage.Header.create({
+								hasMediaAttachment: false
+							}),
+							nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+								buttons: interactiveButtons
+							})
+						})
+					}
+				}
+			}, {
+				userJid: jid,
+				quoted: quoted
+			});
 
+			await conn.relayMessage(jid, msg.message, {
+				messageId: msg.key.id
+			});
+		} catch (e) {
+			console.error("Error sending button message:", e);
+		}
+	};
+	/**
+	 * Just button
+	 */
+	conn.sendButtonMsg = async (jid, text, footer, buttons, quoted) => {
+		try {
+			await conn.sendMessage(jid, {
+				text: text,
+				footer: footer,
+				buttons: buttons.map(btn => ({
+					buttonId: btn.id,
+					buttonText: {
+						displayText: btn.text
+					},
+					type: 1
+				})),
+				headerType: 1,
+				viewOnce: true
+			}, {
+				quoted: quoted
+			});
+		} catch (e) {
+			console.error("Error sending button message:", e);
+		}
+	};
+	/**
+	 * This is the function with the picture
+	 */
+	conn.sendButtonImg = async (jid, text = "", footer = "", buttons = [], imageUrl = "", quoted = null) => {
+		try {
+			await conn.sendMessage(jid, {
+				image: {
+					url: imageUrl
+				},
+				caption: text,
+				footer: footer,
+				buttons: buttons.map(btn => ({
+					buttonId: btn.id,
+					buttonText: {
+						displayText: btn.text
+					},
+					type: 1
+				})),
+				headerType: 1,
+				viewOnce: true
+			}, {
+				quoted: quoted
+			});
+		} catch (e) {
+			console.error("Error sending button image message:", e);
+		}
+	};
+
+	conn.sendButtonVid = async (jid, text = "", footer = "", buttons = [], videoUrl = "", quoted = null) => {
+		try {
+			await conn.sendMessage(jid, {
+				video: {
+					url: videoUrl
+				},
+				mimetype: "video/mp4",
+				caption: text,
+				footer: footer,
+				buttons: buttons.map(btn => ({
+					buttonId: btn.id,
+					buttonText: {
+						displayText: btn.text
+					},
+					type: 1
+				})),
+				headerType: 1,
+				viewOnce: true
+			}, {
+				quoted: quoted
+			});
+		} catch (e) {
+			console.error("Error sending button video message:", e);
+		}
+	};
+	/**
+	 * Function Send List Msg
+	 */
+	conn.sendListMsg = async (jid, text = '', footer = '', title = '', sects = [], quoted = null) => {
+		try {
+			let sections = sects;
+			let listMessage = {
+				title: title,
+				sections
+			};
+
+			let msg = generateWAMessageFromContent(jid, {
+				viewOnceMessage: {
+					message: {
+						messageContextInfo: {
+							deviceListMetadata: {},
+							deviceListMetadataVersion: 2
+						},
+						interactiveMessage: proto.Message.InteractiveMessage.create({
+							body: proto.Message.InteractiveMessage.Body.create({
+								text: text
+							}),
+							footer: proto.Message.InteractiveMessage.Footer.create({
+								text: footer
+							}),
+							header: proto.Message.InteractiveMessage.Header.create({
+								title: '',
+								hasMediaAttachment: false
+							}),
+							nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+								buttons: [{
+									name: "single_select",
+									buttonParamsJson: JSON.stringify(listMessage)
+								}],
+							})
+						})
+					}
+				}
+			}, {
+				userJid: jid,
+				quoted: quoted
+			});
+
+			await conn.relayMessage(msg.key.remoteJid, msg.message, {
+				messageId: msg.key.id
+			});
+		} catch (e) {
+			console.error("Error sending button message:", e);
+		}
+	};
+	/**
+	 * Function Send List Message With Image
+	 */
+	conn.sendListImg = async (jid, text = '', footer = '', title = '', sects = [], imageUrl = '', quoted = null) => {
+		try {
+			console.log('imageUrl:', imageUrl, 'Type:', typeof imageUrl);
+			if (typeof imageUrl !== 'string') {
+				throw new TypeError('The "imageUrl" argument must be of type string.');
+			}
+
+			let sections = sects;
+			let listMessage = {
+				title: title,
+				sections
+			};
+
+			let preparedMedia = await prepareWAMessageMedia({
+				image: {
+					url: imageUrl
+				}
+			}, {
+				upload: conn.waUploadToServer
+			});
+			let msg = generateWAMessageFromContent(jid, {
+				viewOnceMessage: {
+					message: {
+						messageContextInfo: {
+							deviceListMetadata: {},
+							deviceListMetadataVersion: 2
+						},
+						interactiveMessage: proto.Message.InteractiveMessage.create({
+							body: proto.Message.InteractiveMessage.Body.create({
+								text: text
+							}),
+							footer: proto.Message.InteractiveMessage.Footer.create({
+								text: footer
+							}),
+							header: proto.Message.InteractiveMessage.Header.create({
+								title: '',
+								hasMediaAttachment: true,
+								...preparedMedia
+							}),
+							nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+								buttons: [{
+									name: "single_select",
+									buttonParamsJson: JSON.stringify(listMessage)
+								}],
+							})
+						})
+					}
+				}
+			}, {
+				userJid: jid,
+				quoted: quoted
+			});
+
+			await conn.relayMessage(jid, msg.message, {
+				messageId: msg.key.id
+			});
+		} catch (e) {
+			console.error("Error sending button message:", e);
+		}
+	};
+	/**
+	 *Function send button card
+	 */
+	conn.sendButtonCard = async (jid, text, footer, cards, quoted = null) => {
+		try {
+			let preparedCards = await Promise.all(cards.map(async (card) => {
+				let preparedMedia = await prepareWAMessageMedia({
+					image: {
+						url: card.imageUrl
+					}
+				}, {
+					upload: conn.waUploadToServer
+				});
+				return {
+					body: proto.Message.InteractiveMessage.Body.fromObject({
+						text: card.body
+					}),
+					footer: proto.Message.InteractiveMessage.Footer.fromObject({
+						text: card.footer
+					}),
+					header: proto.Message.InteractiveMessage.Header.fromObject({
+						title: card.header,
+						hasMediaAttachment: true,
+						...preparedMedia
+					}),
+					nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
+						buttons: card.buttons.map(button => {
+							if (button.type === 'url') {
+								return {
+									name: "cta_url",
+									buttonParamsJson: JSON.stringify({
+										display_text: button.text,
+										url: button.url,
+										merchant_url: button.url
+									})
+								};
+							}
+						})
+					})
+				};
+			}));
+
+			let msg = generateWAMessageFromContent(jid, {
+				viewOnceMessage: {
+					message: {
+						messageContextInfo: {
+							deviceListMetadata: {},
+							deviceListMetadataVersion: 2
+						},
+						interactiveMessage: proto.Message.InteractiveMessage.fromObject({
+							body: proto.Message.InteractiveMessage.Body.fromObject({
+								text
+							}),
+							footer: proto.Message.InteractiveMessage.Footer.fromObject({
+								text: footer
+							}),
+							header: proto.Message.InteractiveMessage.Header.fromObject({
+								hasMediaAttachment: false
+							}),
+							carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({
+								cards: preparedCards
+							})
+						})
+					}
+				}
+			}, {
+				userJid: jid,
+				quoted: quoted
+			});
+
+			await conn.relayMessage(jid, msg.message, {
+				messageId: msg.key.id
+			});
+		} catch (e) {
+			console.error("Error sending button card message:", e);
+		}
+	};
     return m
 }
 
