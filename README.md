@@ -17,10 +17,9 @@
 - [x] Button Response
 - [x] Simple
 - [x] Support Case
-- [x] Support CommonJS
 - [x] Support Plugin
-- [x] Support ESM ( Plugin )
-- [x] Support ESM ( Case )
+- [x] Support CommonJS
+- [x] Support ESM
 
  ## Dokumentasi
  Semua perintah bot ada pada file [case.js](case.js), Dan juga untuk menu, Disini saya membuat agar lebih praktis dan tidak perlu lagi menambahkan menu secara manual, Disini ada yang namanya dekorasi `@Category`, dekorasi ini bisa memasukan setiap perintah ke dalam kategori menu.
@@ -43,7 +42,7 @@ Untuk contoh lebih lengkap, Silahkan lihat pada file [case.js](case/cleanCase.js
 </br>
 </br>
 
-Tidak ada fungsi `@Category` untuk tipe plugin. Sebagai gantinya kamu bisa memakai format seperti berikut:
+Tidak ada `@Category` untuk tipe plugin. Sebagai gantinya kamu bisa memakai format seperti berikut:
 
 ### Type Plugin CJS ( plugin.cjs atau plugin.js )
 ```javascript
@@ -51,7 +50,7 @@ module.exports = (handler) => {
 
   handler.add({
     cmd: ["ping"], // Perintah
-    cats: ["Testing"], // Kategori
+    cats: "Testing", // Kategori
     alias: "Ping untuk Testing", // Alias
     desc: "Testing", // Deskripsi
     
@@ -68,7 +67,7 @@ export default (handler) => {
 
   handler.add({
     cmd: ["ping"], // Perintah
-    cats: ["Testing"], // Kategori
+    cats: "Testing", // Kategori
     alias: "Ping untuk Testing", // Alias
     desc: "Testing", // Deskripsi
     
@@ -157,6 +156,68 @@ Jika @Category tidak terdeteksi:
 2. Pastikan tidak ada kesalahan pengetikan
 3. Cek urutan parameter
 4. Gunakan console.log untuk memverifikasi
+
+</br>
+</br>
+
+# Konfigurasi Plugin
+Jika pluginmu punya banyak cmd seperti ini, dan males ngasih alias untuk masing masing cmdnya, silahkan pakai format berikut
+```javascript
+handler.add({
+    cmd: [
+      'glitchtext',
+      'writetext',
+      'advancedglow',
+      'typographytext'
+    ],
+    cats: "Tools", // Kategori
+
+    // cmd yang diterima akan berurutan sesuai pada cmd di atas, contoh:
+    // iterasi pertama - glitchtext
+    // iterasi kedua   - writetext
+    // iterasi ketiga  - advancedglow
+    // Semua properti
+    // cmd - cmd saat ini sesuai urutan command diatas
+    // fcmd - semua cmd ( berbentuk array )
+    // cats - kategori saat ini
+    alias: ({ cmd }) => toUpper(cmd), // cmd disini mengacu pada command di atas ^ jadi kita ambil lagi value cmdnya dan memproses datanya untuk dijadikan alias
+    desc: "Membuat foto text",
+
+    run: async ({ m, cmd, text, ditz }) => {
+      if (!text) return m.reply("Mana teksnya?");
+
+      const model = getModel(cmd);
+      const image = await ephoto(model, text);
+
+      await ditz.sendImage(m.chat, image, "Ini fotonya", m.fq);
+    }
+  })
+```
+Untuk contoh lebih lengkap, Silahkan lihat pada file [ephoto.js](plugins/tools/ephoto.js)
+
+> [!NOTE]
+> untuk versi case, jika kamu memiliki permasalahan serupa seperti ini, coba tumpuk case nya manual `case "c1"  : case "c2": case "c3": {}`
+
+## Properti lain untuk plugin
+```typescript
+interface IParams {
+  m: any; // Seriaze
+  cmd: string; // Input command dari user
+  text: string; // Query setelah command
+  ditz: any; // Socket
+}
+
+type IProperti = {
+  cats: string[];
+  alias: string;
+  desc: string;
+  owner: boolean; // Hanya izinkan owner
+  premium: boolean; // Hanya user premium
+
+  run: (params: IParams) => void;
+};
+
+```
 
 ## Kontribusi
 Jika Anda ingin berkontribusi mulai dari menambahkan fitur, Memperbaiki Bugs, dan lain lain, PR Selalu terbuka!

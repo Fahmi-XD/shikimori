@@ -1,1 +1,52 @@
-{}
+{
+  "Anime": [
+    {
+      "cmd": "dnime",
+      "desc": "Mencari istri idaman",
+      "alias": "Cari Anime"
+    }
+  ],
+  "Testing": [
+    {
+      "cmd": "ping",
+      "desc": "Hanya untuk percobaan ping",
+      "alias": "Ping for Testing"
+    }
+  ],
+  "AI": [
+    {
+      "cmd": "ai",
+      "desc": "Berbicara dengan AI, Tanya apapun yang kamu suka!",
+      "alias": "Shikimori AI"
+    },
+    {
+      "cmd": "claude",
+      "desc": "Tanya apa saja dengan AI dari Anthropic!",
+      "alias": "Claude AI"
+    },
+    {
+      "cmd": "gpt",
+      "desc": "Berinteraksi dengan GPT 4 Turbo",
+      "alias": "GPT 4 Turbo"
+    }
+  ],
+  "Downloader": [
+    {
+      "cmd": "tiktok",
+      "desc": "Download video TikTok Tanpa Watermark",
+      "alias": "TikTok Downloader"
+    },
+    {
+      "cmd": "ytmp3",
+      "desc": "Download Video/Audio YouTube dengan instant.",
+      "alias": "YouTube Downloader Audio"
+    }
+  ],
+  "Tools": [
+    {
+      "cmd": "rss",
+      "desc": "Melihat penggunaan memory",
+      "alias": "Rss"
+    }
+  ]
+}
