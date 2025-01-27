@@ -4,17 +4,20 @@ const pengguna = JSON.parse(fs.readFileSync('./src/database/user.json'))
 const owner = JSON.parse(fs.readFileSync('./owner.json'))
 const prem = JSON.parse(fs.readFileSync('./premium.json'))
 const banned = JSON.parse(fs.readFileSync('./src/database/banned.json'));
-
+const { smsg, tanggal, getTime, formatp, isUrl, sleep, clockString, runtime, fetchJson, getBuffer, jsonformat, format, parseMention, getRandom, getGroupAdmins } = require('./myfunc')
 module.exports = async function (ditz, m, chatUpdate, store) {
   const { body } = m;
   const command = body.slice(1).trim().split(/ +/).shift().toLowerCase();
   const args = body.trim().split(/ +/).slice(1)
   const text = q = args.join(" ")
-
+  const from = m.key.remoteJid
   const botNumber = await ditz.decodeJid(ditz.user.id);
   const isCreator = [botNumber, ...owner].map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
   const isOwner = [botNumber, ...owner].map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
   const sender = m.isGroup ? (m.key.participant ? m.key.participant : m.participant) : m.key.remoteJid;
+  const groupMetadata = m.isGroup ? await ditz.groupMetadata(from).catch(e => { }) : '';
+  const groupName = m.isGroup ? groupMetadata.subject : '';
+  const participants = m.isGroup ? await groupMetadata.participants : '';
   const groupAdmins = m.isGroup ? await getGroupAdmins(participants) : '';
   const isBotAdmins = m.isGroup ? groupAdmins.includes(botNumber) : false;
   const isAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false;
