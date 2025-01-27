@@ -71,7 +71,6 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
     if (!ditz.public) {
       if (!m.key.fromMe && isOwner) return;
     }
-    ditz.readMessages([m.key]);
 
     function replyBanned() {
       ditz.sendMessage(m.chat, {
@@ -409,7 +408,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
       case 'ai': case 'shikimori': {
         if (isBan) return replyBanned();
         if (!text) return reply("Aku Shikimori AI, Apa yang kamu ingin tanyakan? ^_°");
-        reply("Bentar yah! Shikimori lagi prosess pertanyaan mu...")
+        // reply("Bentar yah! Shikimori lagi prosess pertanyaan mu...")
         try {
           let url = `https://api.paxsenix.biz.id/ai/gpt4?text=${text}&system=Your%20name%20is%20Shikimori`;
           let response = await axios.get(url);
@@ -420,7 +419,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
         }
       }
         break;
-      
+
       /** @Category ("AI", "Claude AI", "claude", "Tanya apa saja dengan AI dari Anthropic!") */
       case 'claude': {
         if (isBan) return replyBanned();
@@ -485,7 +484,8 @@ ${data.title}
         reply("Aki istri gw 🥰");
         console.log(global.menuData)
       }
-      break;
+        break;
+
       // for tiktok audio
       case 'kirim_audio': {
         if (isBan) return replyBanned();
@@ -517,18 +517,18 @@ ${data.title}
         if (!text) return reply("Mana link YouTube nya?");
         reply("Tunggu sebentar...");
         try {
-           let url = `https://ytdl.axeel.my.id/api/download/audio?url=${encodeURIComponent(text)}`;
-           let response = await fetch(url);
-           let data = response.data;
-           reply(data);
+          let url = `https://ytdl.axeel.my.id/api/download/audio?url=${encodeURIComponent(text)}`;
+          let response = await fetch(url);
+          let data = response.data;
+          reply(data);
         } catch (e) {
-           reply(e);
+          reply(e);
         }
       }
         break;
-        
+
       default:
-        if (budy.startsWith('~>')) {
+        if (budy.startsWith('->')) {
           if (!isCreator) return reply(mess.owner);
           try {
             let evaled = await eval(budy.slice(2));
@@ -546,9 +546,52 @@ ${data.title}
           })
         }
     }
+
+    return {
+      type,
+      quotedMsg,
+      mentioned,
+      now,
+      fromMe,
+      getQuotedObj,
+      body,
+      budy,
+      prefix,
+      isCmd,
+      command,
+      args,
+      full_args,
+      spychat,
+      pushname,
+      text,
+      quoted,
+      mime,
+      isMedia,
+      from,
+      botNumber,
+      isCreator,
+      isOwner,
+      sender,
+      groupMetadata,
+      groupName,
+      participants,
+      groupAdmins,
+      isBotAdmins,
+      isAdmins,
+      isPremium,
+      dbusers,
+      isBan,
+      isUser,
+      numberQuery,
+      mentionByTag,
+      itime,
+      more,
+      readmore
+    }
+
   } catch (err) {
     console.log(util.format(err));
-    ditz.sendMessage(owner + "@s.whatsapp.net", {
+    ditz.sendMessage(owner[0] + "@s.whatsapp.net", {
       text: `Hai owner! ada yang error nih, Di bagian: ` + util.format(err), contextInfo: {
         forwardingScore: 99999,
         isForwarded: true

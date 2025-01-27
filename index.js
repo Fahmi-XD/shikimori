@@ -61,7 +61,7 @@ const question = (text) => {
 };
 
 global.plugins = [];
-global.actPlugins = {};
+global.actPlugins = new Map();
 
 var low
 try {
@@ -137,9 +137,19 @@ cfont.say('GitHub: DitzDev/shikimori', {
 
 const cached = [
   path.join(process.cwd(), "src", "lib", "plugins.js"),
-  "readline",
   "awesome-phonenumber"
 ]
+
+function systemCache() {
+  let cout = 0;
+  if (global.actPlugins.size) [...global.actPlugins.keys()].forEach(v => {
+    if ((Date.now() - global.actPlugins.get(v).lastUsed) > 300_000) { // (3600000 - 1 jam) // (300000 - 5 menit)
+      global.actPlugins.delete(v)
+      cout++;
+    }
+  })
+  if (cout) console.log(`[ ${chalk.cyan("Info")} ] Remove unused plugin : ${cout}`);
+}
 
 
 async function connectToWhatsApp() {
@@ -147,6 +157,7 @@ async function connectToWhatsApp() {
   for (const ss of cached) {
     await delete require.cache[require.resolve(ss)]
   }
+  setInterval(systemCache, 300_000) // 5 menit\
   await loadDatabase();
 
   const {
@@ -202,20 +213,27 @@ async function connectToWhatsApp() {
         if (mek.key && mek.key.remoteJid === 'status@broadcast') return
         if (!ditz.public && !mek.key.fromMe && chatUpdate.type === 'notify') return;
         if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return;
-        m = smsg(ditz, mek, store);
+        m = await smsg(ditz, mek, store);
         if (!m.body) return;
 
         await handlePlugins(ditz, m, chatUpdate, store);
-        await require(path.join(process.cwd(), "case", "case.js"))(ditz, m, chatUpdate, store);
+        const extendData = await require(path.join(process.cwd(), "case", "case.js"))(ditz, m, chatUpdate, store);
         const exc = async (folder) => {
           const f = await fs.readdirSync(folder).filter(v => !v.startsWith("__") && v != "case.js");
-          
+
           for (const v of f) {
             if (await fs.statSync(path.join(folder, v)).isDirectory()) {
               await exc(path.join(folder, v))
             } else {
               try {
-                await require(path.join(process.cwd(), folder, v))(ditz, m, chatUpdate, store);
+                if (v.endsWith(".mjs")) {
+                  // Untuk case yang typenya ESM
+                  (await import("file://" + path.join(process.cwd(), folder, v))).default(ditz, m, chatUpdate, store, extendData);
+                } else if (v.endsWith(".cjs") || v.endsWith(".js")) {
+                  // Untuk case CommonJS
+                  await require(path.join(process.cwd(), folder, v))(ditz, m, chatUpdate, store, extendData);
+                  delete require.cache[require.resolve(path.join(process.cwd(), folder, v))];
+                }
               } catch (error) {
                 console.log(`[ ${chalk.red("Error")} ] Periksa kembali kode case anda.`)
                 console.log(error)
@@ -223,7 +241,7 @@ async function connectToWhatsApp() {
             }
           }
         }
-        
+
         await exc("./case")
       }
     } catch (err) {
@@ -400,7 +418,7 @@ async function connectToWhatsApp() {
   }
 
   ditz.sendImage = async (jid, path, caption = '', quoted = '', options) => {
-    let buffer = Buffer.isBuffer(path) ? path : /^data:.*?\/.*?;base64,/i.test(path) ? Buffer.from(path.split`,`[1], 'base64') : /^https?:\/\//.test(path) ? await (await getBuffer(path)) : fs.existsSync(path) ? fs.readFileSync(path) : Buffer.alloc(0)
+    let buffer = Buffer.isBuffer(path) ? path : /^data:.*?\/.*?;base64,/i.test(path) ? Buffer.from(path.split`,`[1], 'base64') : /^https?:\/\//.test(path) ? { url: path } : fs.existsSync(path) ? fs.readFileSync(path) : Buffer.alloc(0)
     return await ditz.sendMessage(jid, {
       image: buffer,
       caption: caption,
@@ -444,6 +462,17 @@ async function connectToWhatsApp() {
       quoted
     })
     return buffer
+  }
+
+  ditz.sendSticker = async (jid, path, quoted, options = {}) => {
+    let buff = Buffer.isBuffer(path) ? path : /^data:.*?\/.*?;base64,/i.test(path) ? Buffer.from(path.split`,`[1], 'base64') : /^https?:\/\//.test(path) ? { url: path } : fs.existsSync(path) ? fs.readFileSync(path) : Buffer.alloc(0)
+    await ditz.sendMessage(jid, {
+      sticker: buff,
+      ...options
+    }, {
+      quoted
+    })
+    return buff
   }
 
   ditz.sendVideoAsSticker = async (jid, path, quoted, options = {}) => {
@@ -642,7 +671,7 @@ async function connectToWhatsApp() {
         connectToWhatsApp();
       }
     } else if (connection === "open") {
-      console.log(`[ ${chalk.green("System")} ] Koneksi Terhubung!`);
+      console.log(`[ ${chalk.green("System")} ] Koneksi Terhubung!\n\n`);
       ditz.sendMessage(owner[0] + "@s.whatsapp.net", {
         text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
       });

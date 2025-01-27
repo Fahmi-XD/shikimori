@@ -14,7 +14,7 @@ export default (handler) => {
   /** Simple */
   handler.add({
     cmd: ["ping"], // Perintah
-    cats: ["Testing"], // Kategori
+    cats: "Testing", // Kategori
     desc: "Testing", // Deskripsi
     
     run: async ({ m }) => { // Kode yang akan dijalankan
@@ -31,7 +31,7 @@ export default (handler) => {
 
   handler.add({
     cmd: ["rvo"], // Perintah
-    cats: ["Tools"], // Kategori
+    cats: "Tools", // Kategori
     desc: "Melihat pesan satu kali", // Deskripsi
 
     /** Setingan lainnya ( Opsional ) */

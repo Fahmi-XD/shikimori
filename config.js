@@ -31,6 +31,17 @@ global.limitawal = {
     premium: "Infinity",
     free: 50
 }
+global.exifSticker = {
+  packId: "https://github.com/ditzDev/shikimori",
+  packName: "Made By",
+  packPublish: "Shikimori - Bot",
+  packEmail: "admin123@gmail.com",
+  packWebsite: "https://github.com/ditzDev",
+  androidApp: "https://play.google.com/store/apps/details?id=com.bitsmedia.android.muslimpro",
+  iOSApp: "https://apps.apple.com/id/app/muslim-pro-al-quran-adzan/id388389451?|=id",
+  emojis: [],
+  isAvatar: 0,
+},
 
 // COOKIE YOUTUBE
 global.YT_COOKIE = "" 
