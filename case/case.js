@@ -547,7 +547,7 @@ ${data.title}
         }
     }
 
-    return {
+    const returnData = {
       type,
       quotedMsg,
       mentioned,
@@ -588,6 +588,7 @@ ${data.title}
       more,
       readmore
     }
+   return returnData
 
   } catch (err) {
     console.log(util.format(err));

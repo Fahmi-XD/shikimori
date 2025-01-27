@@ -228,10 +228,12 @@ async function connectToWhatsApp() {
               try {
                 if (v.endsWith(".mjs")) {
                   // Untuk case yang typenya ESM
-                  (await import("file://" + path.join(process.cwd(), folder, v))).default(ditz, m, chatUpdate, store, extendData);
+                  const importedModule = await import("file://" + path.join(process.cwd(), folder, v))
+                  importedModule.default(ditz, m, chatUpdate, store, extendData);
                 } else if (v.endsWith(".cjs") || v.endsWith(".js")) {
                   // Untuk case CommonJS
-                  await require(path.join(process.cwd(), folder, v))(ditz, m, chatUpdate, store, extendData);
+                  const requiredModule = require(path.join(process.cwd(), folder, v));
+                  await requiredModule(ditz, m, chatUpdate, store, extendData);
                   delete require.cache[require.resolve(path.join(process.cwd(), folder, v))];
                 }
               } catch (error) {
