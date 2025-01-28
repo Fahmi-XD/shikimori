@@ -511,22 +511,6 @@ ${data.title}
         }
       }
         break;
-
-      /** @Category ("Downloader", "YouTube Downloader Audio", "ytmp3", "Download Video/Audio YouTube dengan instant.") */
-      case "youtube-mp3": case "ytmp3": {
-        if (!text) return reply("Mana link YouTube nya?");
-        reply("Tunggu sebentar...");
-        try {
-          let url = `https://ytdl.axeel.my.id/api/download/audio?url=${encodeURIComponent(text)}`;
-          let response = await fetch(url);
-          let data = response.data;
-          reply(data);
-        } catch (e) {
-          reply(e);
-        }
-      }
-        break;
-
       default:
         if (budy.startsWith('->')) {
           if (!isCreator) return reply(mess.owner);

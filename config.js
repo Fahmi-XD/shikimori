@@ -44,7 +44,7 @@ global.exifSticker = {
 },
 
 // COOKIE YOUTUBE
-global.YT_COOKIE = "" 
+global.YT_COOKIE = ""
 
 global.multiplier = 1000
 
