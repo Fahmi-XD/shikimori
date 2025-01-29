@@ -1,0 +1,143 @@
+:root {
+  --bg-color: #1f2225;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: block;
+  width: 100vw;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  color: white;
+  background-color: var(--bg-color);
+}
+
+img {
+  width: 100%;
+  height: 100%;
+}
+
+#splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100vh;
+  padding: 10px 0;
+  opacity: 0;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  animation: fade-in 700ms ease-in-out forwards;
+  z-index: 10;
+}
+
+#splash .heading {
+  text-align: center;
+  transform: translateY(50px);
+  opacity: 0.8;
+}
+
+#splash .logo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  animation: anim1 5s cubic-bezier(.71,-0.23,.41,1.24) forwards;
+  position: relative;
+}
+
+#splash .logo::before {
+  content: '';
+  animation: anim1 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim2 5s cubic-bezier(.71,-0.23,.41,1.24) forwards;
+  display: flex;
+  background-color: white;
+  opacity: 0;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#splash .footer {
+  font-size: 12px;
+  letter-spacing: 1.1px;
+  opacity: 0.5;
+}
+
+#splash .wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+#splash .under {
+  display: flex;
+  width: 0;
+  height: 3px;
+  opacity: 0;
+  border-radius: 5px;
+  background-color: white;
+  animation: anim2 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim3 5s cubic-bezier(.71,-0.23,.41,1.24) forwards;
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes anim1 {
+
+  0%,
+  50% {
+    border-radius: 0;
+    width: 100px;
+    height: 100px;
+  }
+
+  60%,
+  100% {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@keyframes anim2 {
+
+  0%,
+  50% {
+    opacity: 0;
+  }
+
+  60%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes anim3 {
+
+  0%,
+  50% {
+    width: 0;
+    margin-top: 0;
+  }
+
+  60%,
+  100% {
+    width: 100%;
+    margin-top: 40px;
+  }
+}

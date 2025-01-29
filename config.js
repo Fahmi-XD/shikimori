@@ -5,6 +5,7 @@ const chalk = require("chalk");
 global.ownername = "DitzDev"; // Nama owner?
 global.owner = ['6285717062467', '6285797442902'] // Bisa tambahin lagi, Contoh ['628xx', '62867xx']
 global.nomorown = '6285717062467' // Owner utama
+global.debugServer = true // Jika ingin melihat log server
 global.prem = ['6285717062467', '6285797442902'] 
 global.botname = 'ShikimoriBotz'
 global.botversi = '1.0.0-case-plugin'

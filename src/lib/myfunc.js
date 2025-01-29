@@ -338,7 +338,7 @@ exports.smsg = async (conn, m, store) => {
                             isForwarded: true,
                             forwardedNewsletterMessageInfo: {
                                 newsletterJid: '120363365412644768@newsletter',
-                                newsletterName: 'Made By DitzDev',
+                                newsletterName: `Made By ${global.ownername}`,
                                 serverMessageId: -1
                             },
                             businessMessageForwardInfo: { businessOwnerJid: conn.decodeJid(conn.user.id) },
@@ -355,10 +355,10 @@ exports.smsg = async (conn, m, store) => {
                             text: teks
                         }),
                         footer: proto.Message.InteractiveMessage.Footer.create({
-                            text: `Shikimori Botz by _*DitzDev*_`
+                            text: `Shikimori Botz by _*${global.ownername}*_`
                         }),
                         header: proto.Message.InteractiveMessage.Header.create({
-                            subtitle: "DitzDev",
+                            subtitle: `${global.ownername}`,
                             hasMediaAttachment: false
                         }),
                         nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({

@@ -3,7 +3,7 @@ const yts = require("yt-search");
 module.exports = (handler) => {
   handler.add({
     cmd: ["yts"],
-    cats: ["Searching"],
+    cats: "Searching",
     alias: "YouTube Search",
     desc: "Cari semua konten di YouTube",   
     run: async ({ m, ditz, text}) => {

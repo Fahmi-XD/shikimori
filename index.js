@@ -49,6 +49,7 @@ const {
 } = require('./src/lib/myfunc')
 const loadPlugins = require("./src/lib/plugins");
 const handlePlugins = require("./src/lib/pClient");
+const startService = require("./src/interface/server");
 
 const question = (text) => {
   const rl = readline.createInterface({
@@ -59,9 +60,6 @@ const question = (text) => {
     rl.question(text, resolve)
   })
 };
-
-global.plugins = [];
-global.actPlugins = new Map();
 
 var low
 try {
@@ -159,6 +157,9 @@ async function connectToWhatsApp() {
   }
   setInterval(systemCache, 300_000) // 5 menit\
   await loadDatabase();
+  console.log(`[ ${chalk.green("System")} ] Menjalankan server...`);
+  const call = await startService();
+  console.log(`[ ${chalk.green("System")} ] ${call.text}`);
 
   const {
     state,
@@ -218,6 +219,7 @@ async function connectToWhatsApp() {
 
         await handlePlugins(ditz, m, chatUpdate, store);
         const extendData = await require(path.join(process.cwd(), "case", "case.js"))(ditz, m, chatUpdate, store);
+        if (extendData == null) return;
         const exc = async (folder) => {
           const f = await fs.readdirSync(folder).filter(v => !v.startsWith("__") && v != "case.js");
 
@@ -673,12 +675,29 @@ async function connectToWhatsApp() {
         connectToWhatsApp();
       }
     } else if (connection === "open") {
-      console.log(`[ ${chalk.green("System")} ] Koneksi Terhubung!\n\n`);
-      ditz.sendMessage(owner[0] + "@s.whatsapp.net", {
-        text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
-      });
+      console.log(`[ ${chalk.green("System")} ] Semua siap!`);
+      // ditz.sendMessage(owner[0] + "@s.whatsapp.net", {
+      //   text: `*Connected! 🕊️*\n\nYour bot has successfully connected to the server\n\n*Warn : Dont Sell The Bot !!!*`
+      // });
     }
   });
+
+  process.on("SIGINT", () => {
+    call.server.close(() => {
+      console.log(`[ ${chalk.red("Server")} ] Server dihentikan`);
+    })
+  })
+  process.on("SIGTERM", () => {
+    call.server.close(() => {
+      console.log(`[ ${chalk.red("Server")} ] Server dihentikan`);
+    })
+  })
+  process.on("beforeExit", () => {
+    call.server.close(() => {
+      console.log(`[ ${chalk.red("Server")} ] Server dihentikan`);
+    })
+  })
+
   return ditz
 }
 connectToWhatsApp()

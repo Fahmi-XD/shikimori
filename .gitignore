@@ -1,5 +1,7 @@
 /src/Shikimori/
 /node_modules/
 /test/
+/testTypescript/
 package-lock.json
 yarn.lock
+.vscode

@@ -18,6 +18,9 @@ exports.addCommandToCategory = function addCommandToCategory(category, cmd, desc
 
 module.exports = async function loadPlugins() {
   global.ct = 0;
+  global.plugins = [];
+  global.actPlugins = new Map();
+
   if (!global.menuData) {
     global.menuData = {};
   }
@@ -71,7 +74,7 @@ plugin: ${JSON.stringify({
 
   const sumCase = async (folder) => {
     const f = await fs.readdirSync(folder).filter(v => !v.startsWith("__"));
-    
+
     for (const v of f) {
       if (await fs.statSync(path.join(folder, v)).isDirectory()) {
         await sumCase(path.join(folder, v))

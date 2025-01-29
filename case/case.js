@@ -36,9 +36,9 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
     const { type, quotedMsg, mentioned, now, fromMe, getQuotedObj } = m
     var body = m.body;
     var budy = (typeof m.text == 'string' ? m.text : '')
-    var prefix = prefa ? /^[°•π÷×¶∆£¢€¥®™+✓_=|~!?@#$%^&.©^]/gi.test(body) ? body.match(/^[°•π÷×¶∆£¢€¥®™+✓_=|~!?@#$%^&.©^]/gi)[0] : "" : prefa ?? global.prefix
+    var prefix = prefa ? /^[°•π÷×¶∆£¢€¥®™+✓_=|~!?@#$%^&.©^]/gi.test(body) ? body.match(/^[°•π÷×¶∆£¢€¥®™+✓_=|~!?@#$%^&.©^]/gi)[0] : "." : prefa ?? global.prefa
     const isCmd = body.startsWith(prefix)
-    const command = body.slice(1).trim().split(/ +/).shift().toLowerCase();
+    const command = isCmd ? body.slice(1).trim().split(/ +/).shift().toLowerCase() : body;
     const args = body.trim().split(/ +/).slice(1)
     const full_args = body.replace(command, '').slice(1).trim()
     const spychat = body.replace().slice().trim()
@@ -74,7 +74,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
 
     function replyBanned() {
       ditz.sendMessage(m.chat, {
-        text: mess.banned, footer: 'ShikimoriBotz - By DitzDev', buttons: [{
+        text: mess.banned, footer: `ShikimoriBotz - By ${global.ownername}`, buttons: [{
           buttonId: '.banding',
           buttonText: {
             displayText: '📜 Aju Banding'
@@ -188,7 +188,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                   newsletterJid: '120363365412644768@newsletter',
-                  newsletterName: 'Made By DitzDev',
+                  newsletterName: `Made By global.ownername`,
                   serverMessageId: -1
                 },
                 businessMessageForwardInfo: { businessOwnerJid: ditz.decodeJid(ditz.user.id) },
@@ -205,10 +205,10 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
                 text: teks
               }),
               footer: proto.Message.InteractiveMessage.Footer.create({
-                text: `Shikimori Botz by _*DitzDev*_`
+                text: `Shikimori Botz by _*${global.ownername}*_`
               }),
               header: proto.Message.InteractiveMessage.Header.create({
-                subtitle: "DitzDev",
+                subtitle: `${global.ownername}`,
                 hasMediaAttachment: false
               }),
               nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
@@ -302,7 +302,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
                   isForwarded: true,
                   forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363365412644768@newsletter',
-                    newsletterName: 'DitzDev - 2025',
+                    newsletterName: `${global.ownername} - 2025`,
                     serverMessageId: -1
                   },
                   externalAdReply: {
@@ -318,11 +318,11 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
                   text: menu
                 }),
                 footer: proto.Message.InteractiveMessage.Footer.create({
-                  text: 'ShikimoriBotz - By DitzDev'
+                  text: `ShikimoriBotz - By ${global.ownername}`
                 }),
                 header: proto.Message.InteractiveMessage.Header.create({
                   title: 'Hai!',
-                  subtitle: 'By DitzDev',
+                  subtitle: `By ${global.ownername}`,
                   hasMediaAttachment: true, ...(await prepareWAMessageMedia({ document: { url: 'https://wa.me' }, mimetype: 'application/vnd.ms-powerpoint', fileName: 'ShikimoriBotz', jpegThumbnail: await resize('https://files.catbox.moe/9gj04y.png', 300, 100), fileLength: 1000000000 }, { upload: ditz.waUploadToServer }))
                 }),
                 nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
@@ -376,7 +376,7 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
                   isForwarded: true,
                   forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363365412644768@newsletter',
-                    newsletterName: 'DitzDev - 2025',
+                    newsletterName: `${global.ownername} - 2025`,
                     serverMessageId: -1
                   },
                 },
@@ -384,11 +384,11 @@ module.exports = ditz = async (ditz, m, chatUpdate, store) => {
                   text: `Ini adalah beberapa perintah dari ${category} Menu, Click dibawah untuk melihat.`
                 }),
                 footer: proto.Message.InteractiveMessage.Footer.create({
-                  text: 'ShikimoriBotz - By DitzDev'
+                  text: `ShikimoriBotz - By ${global.ownername}`
                 }),
                 header: proto.Message.InteractiveMessage.Header.create({
                   title: 'Hai!',
-                  subtitle: 'By DitzDev'
+                  subtitle: `By ${global.ownername}`
                 }),
                 nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
                   buttons: [{
@@ -480,8 +480,9 @@ ${data.title}
         }
       }
         break;
+
       case "test": {
-        reply("Aki istri gw 🥰");
+        reply("Cek Log");
         console.log(global.menuData)
       }
         break;
