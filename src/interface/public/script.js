@@ -1,5 +1,16 @@
 const typingElement = document.getElementById('flip');
 let text = typingElement.innerHTML;
+var elem = document.documentElement;
+
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    elem.msRequestFullscreen();
+  }
+}
 
 function createSpans() {
   typingElement.innerHTML = '';
@@ -53,5 +64,5 @@ createSpans();
 animateTyping();
 
 setTimeout(() => {
-  alert("Anjay")
+  openFullscreen()
 }, 3510)

@@ -3,7 +3,7 @@ const path = require("node:path");
 const chalk = require("chalk");
 
 const app = express();
-const PORT = process.env.port || 8080;
+const PORT = process.env.port || global.PORT;
 const getStatusCode = (statusCode) => {
   if (statusCode < 300 && statusCode > 100) { // 2xx
     return chalk.green(statusCode);
@@ -34,7 +34,7 @@ app.set("trust proxy", true);
 app.use((req, res, next) => {
   const end = res.end;
   res.end = (chunk, encoding) => {
-    global.log(`${req.ip} | endpoint: ${req.path} | ${getStatusCode(res.statusCode)}`);
+    global.log(`${req.ip} | ${req.path} | ${getStatusCode(res.statusCode)}`);
 
     res.end = end;
     res.end(chunk, encoding);
@@ -55,6 +55,7 @@ app.get("/", (req, res) => {
 module.exports = function startService() {
   return new Promise((resolve, reject) => {
     const server = app.listen(PORT, () => {
+      global.serverRunning = true;
       resolve({
         text: "server berjalan di http://localhost:"+PORT,
         server: server

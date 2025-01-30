@@ -84,6 +84,7 @@ const color = (text, color) => {
   return !color ? chalk.green(text) : chalk.keyword(color)(text)
 }
 
+global.deepseek = {};
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse())
 global.db = new Low(
   /https?:\/\//.test(opts['db'] || '') ?
@@ -140,12 +141,25 @@ const cached = [
 
 function systemCache() {
   let cout = 0;
+  let cout2 = 0;
+  
+  if (Object.keys(global.deepseek).length) {
+    Object.keys(global.deepseek).forEach(v => {
+      if (global.deepseek[v].lastInteract > 300_000) { // 5 menit
+        delete global.deepseek[v];
+        cout2++;
+      }
+    })
+  }
+  
   if (global.actPlugins.size) [...global.actPlugins.keys()].forEach(v => {
     if ((Date.now() - global.actPlugins.get(v).lastUsed) > 300_000) { // (3600000 - 1 jam) // (300000 - 5 menit)
       global.actPlugins.delete(v)
       cout++;
     }
   })
+  
+  if (cout2) console.log(`[ ${chalk.cyan("Info")} ] Remove deepseek user : ${cout2}`);
   if (cout) console.log(`[ ${chalk.cyan("Info")} ] Remove unused plugin : ${cout}`);
 }
 
@@ -157,9 +171,11 @@ async function connectToWhatsApp() {
   }
   setInterval(systemCache, 300_000) // 5 menit\
   await loadDatabase();
-  console.log(`[ ${chalk.green("System")} ] Menjalankan server...`);
-  const call = await startService();
-  console.log(`[ ${chalk.green("System")} ] ${call.text}`);
+  if (!global.serverRunning) {
+    console.log(`[ ${chalk.green("System")} ] Menjalankan server...`);
+    const call = await startService();
+    console.log(`[ ${chalk.green("System")} ] ${call.text}`);
+  }
 
   const {
     state,
@@ -681,22 +697,6 @@ async function connectToWhatsApp() {
       // });
     }
   });
-
-  process.on("SIGINT", () => {
-    call.server.close(() => {
-      console.log(`[ ${chalk.red("Server")} ] Server dihentikan`);
-    })
-  })
-  process.on("SIGTERM", () => {
-    call.server.close(() => {
-      console.log(`[ ${chalk.red("Server")} ] Server dihentikan`);
-    })
-  })
-  process.on("beforeExit", () => {
-    call.server.close(() => {
-      console.log(`[ ${chalk.red("Server")} ] Server dihentikan`);
-    })
-  })
 
   return ditz
 }
