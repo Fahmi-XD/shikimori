@@ -80,7 +80,7 @@ function openFullscreen() {
 
 let bounce = 0;
 document.getElementById("interface").addEventListener("click", () => {
-  // openFullscreen()
+  openFullscreen()
   document.getElementById("nth-2").classList.add("dis");
   (new Typing(document.getElementById("flip"))).run();
   (new Typing(document.getElementById("flip2"))).run(1000);
