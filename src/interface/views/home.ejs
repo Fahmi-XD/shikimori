@@ -6,7 +6,7 @@
   <title>Bot Interface | <%= title %> </title>
   <link rel="stylesheet" href="/style.css">
 </head>
-<body onload="window.open('./, '', 'fullscreen=yes, scrollbars=auto');">
+<body>
   <svg>
     <defs>
       <filter id="filter">
@@ -21,7 +21,10 @@
   </svg>
   <section id="splash">
     <div id="nth-2">
-      <h1 id="flip" class="heading">Selamat malam <%= ownername %></br>Bagaimana kabarmu?</h1>
+      <div class="text">
+        <h1 id="flip" class="heading">Selamat malam <%= ownername %></h1>
+        <h1 id="flip2" class="heading">Bagaimana kabarmu?</h1>
+      </div>
       <div class="wrapper">
         <div class="logo" id="logo">
           <img class="logo logo-img" src="https://camo.githubusercontent.com/0682632be6a85a989f8a1d3098d90ca0ce1d55ed3b35639824173253480a7813/68747470733a2f2f66696c65732e636174626f782e6d6f652f616d376a64662e6a706567" alt="Shikimori">

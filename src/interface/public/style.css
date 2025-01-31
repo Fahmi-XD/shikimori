@@ -42,21 +42,28 @@ img {
 
 #splash .heading {
   text-align: center;
+  display: flex;
   transform: translateY(50px);
   opacity: 0.8;
+}
+
+#splash .wrapper.dis .logo {
+  animation: anim1 5s cubic-bezier(.71,-0.23,.41,1.24) forwards;
 }
 
 #splash .logo {
   width: 100px;
   height: 100px;
   object-fit: cover;
-  animation: anim1 5s cubic-bezier(.71,-0.23,.41,1.24) forwards;
   position: relative;
+}
+
+#splash .wrapper.dis .logo::before {
+  animation: anim1 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim2 5s cubic-bezier(.71,-0.23,.41,1.24) forwards;
 }
 
 #splash .logo::before {
   content: '';
-  animation: anim1 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim2 5s cubic-bezier(.71,-0.23,.41,1.24) forwards;
   display: flex;
   background-color: white;
   opacity: 0;
@@ -82,14 +89,16 @@ img {
   width: 100%;
 }
 
+#splash .wrapper.dis .under {
+  animation: anim2 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim3 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim4 15s linear forwards;
+}
+
 #splash .under {
   display: flex;
   width: 0;
   height: 3px;
   opacity: 0;
-  border-radius: 5px;
   background-color: white;
-  animation: anim2 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim3 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim4 15s linear forwards;
 }
 
 @keyframes fade-in {
@@ -102,16 +111,18 @@ img {
 
   0%,
   50% {
-    border-radius: 0;
+    border-radius: 10px;
     width: 100px;
     height: 100px;
+    filter: blur(0);
   }
-
+  
   60%,
   100% {
     border-radius: 50%;
     width: 40px;
     height: 40px;
+    filter: blur(1px);
   }
 }
 
@@ -137,7 +148,7 @@ img {
 
   60%,
   100% {
-    margin-top: 40px;
+    margin-top: 80px;
   }
 }
 
@@ -155,11 +166,11 @@ img {
 }
 
 #nth-2.dis {
-  display: flex;
+  opacity: 1;
 }
 
 #nth-2.dis ~ #nth-1 {
-  display: none;
+  opacity: 0;
 }
 
 #nth-1 {
@@ -167,14 +178,19 @@ img {
   flex-direction: column;
   width: 100vw;
   height: 100vh;
+  opacity: 1;
+  position: fixed;
+  transition: opacity 200ms ease-out;
   justify-content: center;
   align-items: center;
 }
 
 #nth-2 {
-  display: none;
+  display: flex;
   flex-direction: column;
+  transition: opacity 200ms ease-in;
   width: 100vw;
+  opacity: 0;
   height: 100vh;
   justify-content: space-between;
   align-items: center;
@@ -186,4 +202,11 @@ img {
   border: solid 1px white;
   font-size: 25px;
   background-color: transparent;
+}
+
+#splash .text {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
