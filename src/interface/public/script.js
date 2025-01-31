@@ -42,7 +42,7 @@ function animateTyping() {
 
       function fadeIn() {
         opacity += 0.7;
-        blur -= 4.5
+        blur -= 3.5
 
         char.style.opacity = Math.min(opacity, 1);
         char.style.filter = `blur(${Math.max(blur, 0)}px)`;
@@ -60,14 +60,27 @@ function animateTyping() {
   animateChar();
 }
 
-createSpans();
-animateTyping();
 
 document.getElementById("interface").addEventListener("click", () => {
   openFullscreen()
   document.getElementById("nth-2").classList.add("dis")
-  
+  createSpans();
+  animateTyping();
 })
 
+function bounceBall() {
+  const PERCEPATAN = 1;
+  let cV = 0;
+  
+  cV += PERCEPATAN;
+  
+  document.getElementById("logo").style.transform = `translateY(${cV}px)`;
+  
+  if (cV < 50) {
+    requestAnimationFrame(bounceBall);
+  }
+}
+
 setTimeout(() => {
+  bounceBall();
 }, 3510)
