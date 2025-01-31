@@ -89,7 +89,7 @@ img {
   opacity: 0;
   border-radius: 5px;
   background-color: white;
-  animation: anim2 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim3 5s cubic-bezier(.71,-0.23,.41,1.24) forwards;
+  animation: anim2 5s cubic-bezier(.71,-0.23,.41,1.24) forwards, anim3 15s cubic-bezier(.71,-0.23,.41,1.24) forwards;
 }
 
 @keyframes fade-in {
@@ -138,7 +138,35 @@ img {
 
   60%,
   100% {
-    width: 100%;
+    width: 30%;
     margin-top: 40px;
   }
+}
+
+#nth-2 {
+  display: none;
+}
+
+#nth-2.dis {
+  display: flex;
+}
+
+#nth-2.dis ~ #nth-1 {
+  display: none;
+}
+
+#nth-1 {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+#interface {
+  color: white;
+  padding: 7px 20px;
+  border: solid 1px white;
+  font-size: 25px;
+  background-color: transparent;
 }

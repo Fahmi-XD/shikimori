@@ -41,8 +41,8 @@ function animateTyping() {
       let blur = 13;
 
       function fadeIn() {
-        opacity += 0.70;
-        blur -= 3.5
+        opacity += 0.7;
+        blur -= 4.5
 
         char.style.opacity = Math.min(opacity, 1);
         char.style.filter = `blur(${Math.max(blur, 0)}px)`;
@@ -63,6 +63,11 @@ function animateTyping() {
 createSpans();
 animateTyping();
 
-setTimeout(() => {
+document.getElementById("interface").addEventListener("click", () => {
   openFullscreen()
+  document.getElementById("nth-2").classList.add("dis")
+  
+})
+
+setTimeout(() => {
 }, 3510)
